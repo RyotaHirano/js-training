@@ -37,22 +37,22 @@ module.exports = function(object) {
     return totalNum;
   }
 
-  function keyAndValue(obj) {
-    if (Object.keys(obj).length > 0) {
-      for (var myKey in obj) {
-        var targetObj = obj[myKey];
-        if (Object.keys(targetObj).length > 0) {
-          // returnObj = {
-          //   'key': returnObj['key'] + getNum(myKey),
-          //   'value': returnObj['value'] + getNum(targetObj)
-          // };
-          // for (var myKey2 in targetObj) {
-          //   returnObj = {
-          //     'key': returnObj['key'] + getNum(myKey2),
-          //     'value': returnObj['value'] + getNum(targetObj[myKey2])
-          //   };
-          // }
+  function isObject(value) {
+    return (value !== null &&
+            typeof value !== 'undefined' &&
+            Object(value) === value &&
+            !Array.isArray(value));
+  }
 
+  function keyAndValue(obj) {
+    if (isObject(obj)) {
+      for(var myKey in obj) {
+        var targetObj = obj[myKey];
+        if (isObject(targetObj)) {
+          returnObj = {
+            'key': returnObj['key'] + getNum(myKey),
+            'value': returnObj['value'] + getNum(targetObj)
+          };
           keyAndValue(targetObj);
         } else {
           returnObj = {
