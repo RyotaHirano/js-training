@@ -8,5 +8,40 @@
 //]
 //startは文字列全体のどの位置から1が始まっているのか（配列のindexと同じく0スタートとするのでstart: 2の場合は文字列全体の3番目に1があるということ）、widthはいくつ連続して1が存在しているのか、という単純なデータ。
 module.exports = function (string) {
- 
+  var strLength = string.length;
+	var startIndex = 0;
+	var lastIsOne = false;
+	var count = 0;
+	var returnArr = [];
+	var arrayIndex = 0;
+
+	for (var i = 0; i < strLength; i++)   {
+
+		if(string.charAt(i) === '1') {
+			if(lastIsOne === false) {
+				startIndex = i;
+			}
+			count++;
+			lastIsOne = true;
+		} else {
+			if(lastIsOne === true) {
+				returnArr[arrayIndex] = {
+					'start': startIndex,
+					'width': count
+				};
+				count = 0;
+				arrayIndex++;
+			}
+			lastIsOne = false;
+		}
+
+    if(lastIsOne === true) {
+  		returnArr[arrayIndex] = {
+  			'start': startIndex,
+  			'width': count
+  		};
+  	}
+	}
+
+	return returnArr;
 };
