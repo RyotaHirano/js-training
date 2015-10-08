@@ -7,46 +7,54 @@ module.exports = function(object) {
     'value': 0
   };
 
+  function isNumber(x) {
+    if (typeof(x) != 'number' && typeof(x) != 'string')
+      return false;
+    else
+      return (x == parseFloat(x) && isFinite(x));
+  }
+
+  function isObject(value) {
+    return (Object(value) === value && !Array.isArray(value));
+  }
+
   function getNum(value) {
     var length = value.length;
     var lastIsNum = false;
     var numString = '';
     var totalNum = 0;
 
-    value = value + '';
+    if(isNumber(value)) {
+      return value;
+    } else {
+      var strValue = value + '';
 
-    for (var i = 0; i < length; i++) {
-      var target = value.charAt(i);
+      for (var i = 0; i < length; i++) {
+        var target = strValue.charAt(i);
 
-      if (!isNaN(parseInt(target))) {
-        numString = numString + target + '';
-        lastIsNum = true;
-      } else {
-        if (lastIsNum === true) {
-          totalNum = totalNum + parseInt(numString);
-          numString = '';
+        if (isNumber(target)) {
+          numString = numString + target + '';
+          lastIsNum = true;
+        } else {
+          if (lastIsNum === true) {
+            totalNum = totalNum + parseInt(numString);
+            numString = '';
+          }
+          lastIsNum = false;
         }
-        lastIsNum = false;
       }
+
+      if (lastIsNum === true) {
+        totalNum = totalNum + parseInt(numString);
+      }
+
+      return totalNum;
     }
-
-    if (lastIsNum == true) {
-      totalNum = totalNum + parseInt(numString);
-    }
-
-    return totalNum;
-  }
-
-  function isObject(value) {
-    return (value !== null &&
-            typeof value !== 'undefined' &&
-            Object(value) === value &&
-            !Array.isArray(value));
   }
 
   function keyAndValue(obj) {
     if (isObject(obj)) {
-      for(var myKey in obj) {
+      for (var myKey in obj) {
         var targetObj = obj[myKey];
         if (isObject(targetObj)) {
           returnObj = {
@@ -62,8 +70,6 @@ module.exports = function(object) {
         }
       }
     }
-
-
     return returnObj;
   }
 
