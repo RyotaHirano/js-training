@@ -52,21 +52,23 @@ module.exports = function(object) {
     }
   }
 
+  function sumObj(key, obj) {
+    returnObj = {
+      'key': returnObj['key'] + getNum(key),
+      'value': returnObj['value'] + getNum(obj[key])
+    }
+    return returnObj;
+  }
+
   function keyAndValue(obj) {
     if (isObject(obj)) {
       for (var myKey in obj) {
         var targetObj = obj[myKey];
         if (isObject(targetObj)) {
-          returnObj = {
-            'key': returnObj['key'] + getNum(myKey),
-            'value': returnObj['value'] + getNum(targetObj)
-          };
+          sumObj(myKey, obj);
           keyAndValue(targetObj);
         } else {
-          returnObj = {
-            'key': returnObj['key'] + getNum(myKey),
-            'value': returnObj['value'] + getNum(targetObj)
-          };
+          sumObj(myKey, obj);
         }
       }
     }
