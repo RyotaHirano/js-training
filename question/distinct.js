@@ -16,5 +16,23 @@
 // }
 // を返却する。
 module.exports = function (array) {
+  var keyArray = [];
 
+  function getKeyValue(data) {
+    if(Array.isArray(data)) {
+      for(key in data) {
+        keyArray.push(key);
+      }
+
+      keyArray.filter(function(key, index, _array) {
+        return _array.indexOf(key) !== _array.lastIndexOf(key);
+      });
+    }
+  }
+
+  function distinct(array) {
+    array.slice().map(function(data) {
+      getKeyValue(data);
+    });
+  }
 };
