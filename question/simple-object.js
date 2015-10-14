@@ -9,79 +9,76 @@
 //  key2: "String"
 //}
 module.exports = function(object) {
-  var myObject = {};
+  var resultObject = {};
+  var resultObjKey;
 
-  function isArray(target) {
-    return Object.prototype.toString.call(target) === '[object Array]';
+  function isObject(obj) {
+    return (Object(obj) === obj && !Array.isArray(obj));
   }
 
-  function isObject(target) {
-    if ( target !== undefined && target !== null ) {
-    	if ( Object.keys(target).length > 0 && !isArray(target) ) {
-    		return true;
-    	}
-    }
-    return false;
-  }
+  function getValue(obj) {
+    for (var type in obj) {
+      if (obj.hasOwnProperty(type)) {
+        var targetData = obj[type];
 
-  function simpleObject(obj) {
-    var _obj = {};
+        if (isObject(targetData)) {
+          for (var tmpKey in targetData) {
+            var tmpObject = {};
+            var tmpValue;
 
-    for (var key in obj) {
-      var data = obj[key];
+            tmpValue = getValue(targetData);
+            tmpObject[type] = tmpValue;
+            resultObject[resultObjKey] = tmpObject;
+          }
+        }
 
-      if ( isObject(data) ) {
-        simpleObject(data);
-      } else {
-        if (obj.hasOwnProperty(key)) {
-          _obj[key] = obj[key];
+        if (Array.isArray(targetData)) {
+          var tmpDataArray = [];
+          targetData.forEach(function(data) {
+
+            if (isObject(data)) {
+              var tmpDataObject = {};
+
+              for (var dataKey in data) {
+                if (data.hasOwnProperty(dataKey)) {
+                  tmpDataObject[dataKey] = getValue(data[dataKey]);
+                }
+              }
+              tmpDataArray.push(tmpDataObject);
+            } else {
+              resultObject[resultObjKey][type] = getValue(data);
+            }
+          })
+          resultObject[resultObjKey][type] = tmpDataArray;
+        }
+
+        if (type == 'N') {
+          return parseInt(targetData);
+        } else if (type == 'S') {
+          return targetData + '';
         }
       }
     }
-
-    return _obj;
   }
 
-  // simpleObject(object);
+  function simpleObject(object) {
+    for (var key in object) {
+      resultObjKey = key;
+      if (object.hasOwnProperty(key)) {
+        var datum = object[key];
 
-  // for (var key in object) {
-  //   if (object.hasOwnProperty(key)) {
-  //     myObject[key] = object[key];
-  //   }
-  // }
-  // for (var myKey in myObject) {
-  //   var objectDatum = {};
-  //   if (myObject.hasOwnProperty(myKey)) {
-  //     objectDatum[myKey] = myObject[myKey];
-  //
-  //     for (var myKey2 in objectDatum) {
-  //       var objectData = {};
-  //       if (objectDatum.hasOwnProperty(myKey2)) {
-  //         objectData = objectDatum[myKey2];
-  //
-  //         for (var myKey3 in objectData) {
-  //           var convData;
-  //
-  //           for (var myKey4 in objectData) {
-  //
-  //           }
-  //
-  //           if (isNaN(objectData[myKey3])) {
-  //             //文字列
-  //             convData = objectData[myKey3] + '';
-  //           } else {
-  //             //数値
-  //             convData = parseInt(convData[myKey3]);
-  //           }
-  //           myObject[myKey] = convData;
-  //         }
-  //
-  //       }
-  //     }
-  //
-  //   }
-  // }
-  //
-  //
-  // return myObject;
+        if (Object.keys(datum).length > 1) {
+          if (isObject(datum)) {
+            getValue(datum);
+          }
+        } else {
+          var value = getValue(datum);
+          resultObject[resultObjKey] = value;
+        }
+      }
+    }
+  return resultObject;
+}
+
+return simpleObject(object);
 };
